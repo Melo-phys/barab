@@ -18,7 +18,7 @@ module globals
   !del -> deleted nodes
   !nodes -> existing nodes
   
-  integer,parameter :: nl=1000000,nn=1000
+  integer,parameter :: nl=1000000,nn=10000
   integer :: n,ne,ktot,ll,pseed,cod,jj,flag
   integer,allocatable :: v(:),k(:),o(:,:),del(:),p2(:),p2k(:),tt(:),ttk(:),pk(:)
   real*8,allocatable :: cl(:),clhist(:,:),lk(:,:),dkk(:,:,:)
@@ -55,7 +55,7 @@ program evol
   
   use globals
   implicit none
-  integer :: i,j,l,in,no,kmax,soma,sk,sk2,sk3,no1,no2
+  integer :: i,j,l,in,no,kmax,soma,sk,sk2,sk3,no1,no2,numi,numf,num
   integer,allocatable :: P(:,:),lll(:),d(:,:,:),t(:,:,:),nk(:)
   real*8 :: z,hd,km,km2,km3
   character(14) :: clfile
@@ -63,137 +63,149 @@ program evol
   character(14) :: lfile
   character(8) :: ddfile
   character(5) :: aaaa
+  character(5) :: numberi
+  character(5) :: numberf
   character(5) :: number
+  character(5) :: randnum
 !  open(1,file='pk.dat')
   open(2,file='comoliga.dat')
   open(3,file='nlinks.dat')
   open(4,file='del.dat')
 !  open(55,file='cl.dat')
-  open(6,file='arq.dat')
-  read(6,*)frac, hd
+!  open(6,file='arq.dat')
+!  read(6,*)frac, hd
+  hd=1
 !  open(8,file='dist.dat')
   !frac=0.5
   !hd=0.9d0
-  call getarg(1,number)
+  call getarg(1,numberi)
+  read(numberi,'(I5)')numi
+  call getarg(2,numberf)
+  read(numberf,'(I5)')numf
+  call getarg(3,randnum)
+  read(randnum,'(I5)')pseed
     
-  call inicia
-  ddfile="dd_"//number
-  open(123123,file=ddfile)
-  ddd=0
-  dddd=0
-  allocate(tt(nl),p2(nl))
-
-  do in=2,4
-    clfile(1:9)='cl_'//number//"_"
-    pkfile(1:9)='pk_'//number//"_"
-    lfile(1:9)='ll_'//number//"_"
+  do num=numi,numf
+    number=''
+    write(number,'(I5.5)')num
+    call inicia
+    ddfile="dd_"//number
+    open(123123,file=ddfile)
+    ddd=0
+    dddd=0
+    allocate(tt(nl),p2(nl))
+    
+    do in=2,4
+      clfile(1:9)='cl_'//number//"_"
+      pkfile(1:9)='pk_'//number//"_"
+      lfile(1:9)='ll_'//number//"_"
 !    open(111,file='intermednome')
 !    write(111,'(I5)')in
-    aaaa=''
-    write(aaaa,'(I5.5)')n
+      aaaa=''
+      write(aaaa,'(I5.5)')n
 !    read(111,'(A)')aaaa
-    close(1111)
-    clfile(10:14)=adjustl(aaaa)
-    pkfile(10:14)=adjustl(aaaa)
-    lfile(10:14)=adjustl(aaaa)
-    write(103,*)clfile,' ',pkfile,' ',aaaa
+      close(1111)
+      clfile(10:14)=adjustl(aaaa)
+      pkfile(10:14)=adjustl(aaaa)
+      lfile(10:14)=adjustl(aaaa)
+      write(103,*)clfile,' ',pkfile,' ',aaaa
 !    open(101,file=clfile)
 !    open(102,file=pkfile)
 !    open(104,file=lfile)
-
-!    do while((n<in*(nn/10)).and.(ktot.lt.nl))
-    do while((n<(10**in)).and.(ktot.lt.nl))
-      ll=ll+1
-      call random_number(z)
-      if(z<hd)then        !chooses horizontal transfer or dupication
-        flag=0
-        do while (flag.ne.1)
-          call horizontal
-        end do
-      else 
-        call duplica
-      end if
-!      write(111,*)v(1:ktot+1),'&'
-      write(3,*)n,ktot/2
-
-!      allocate(tt(n),p2(n))
-      kmax=maxval(k)
-      allocate(ttk(kmax+1))
-      ttk=0
-      ddd=0
-      do i=1,n
-        call cluster2(i)
-      end do
-      ddd=sum(ttk)*1./6
-      write(123123,*)n,ddd,ddd-dddd
-      dddd=ddd
-      deallocate(ttk)
-!      deallocate(tt,p2)
       
-   end do
-
-    clfile(1:9)='cl_'//number//"_"
-    pkfile(1:9)='pk_'//number//"_"
-    lfile(1:9)='ll_'//number//"_"
+!    do while((n<in*(nn/10)).and.(ktot.lt.nl))
+      do while((n<(10**in)).and.(ktot.lt.nl))
+        ll=ll+1
+        call random_number(z)
+        if(z.le.hd)then        !chooses horizontal transfer or dupication
+          flag=0
+          do while (flag.ne.1)
+            call horizontal
+          end do
+        else 
+          call duplica
+        end if
+!      write(111,*)v(1:ktot+1),'&'
+        write(3,*)n,ktot/2
+        
+!      allocate(tt(n),p2(n))
+        kmax=maxval(k)
+        allocate(ttk(kmax+1))
+        ttk=0
+        ddd=0
+        do i=1,n
+          call cluster2(i)
+        end do
+        ddd=sum(ttk)*1./6
+        write(123123,*)n,ddd,ddd-dddd
+        dddd=ddd
+        deallocate(ttk)
+!      deallocate(tt,p2)
+        
+      end do
+      
+      clfile(1:9)='cl_'//number//"_"
+      pkfile(1:9)='pk_'//number//"_"
+      lfile(1:9)='ll_'//number//"_"
 !    open(111,file='intermednome')
 !    write(111,'(I5)')in
-    aaaa=''
-    write(aaaa,'(I5.5)')n
+      aaaa=''
+      write(aaaa,'(I5.5)')n
 !    read(111,'(A)')aaaa
-    close(1111)
-    clfile(10:14)=adjustl(aaaa)
-    pkfile(10:14)=adjustl(aaaa)
-    lfile(10:14)=adjustl(aaaa)
-    write(103,*)clfile,' ',pkfile,' ',aaaa
-    open(101,file=clfile,form='UNFORMATTED')
-    open(102,file=pkfile,form='UNFORMATTED')
-    open(104,file=lfile,form='UNFORMATTED')
-    
-    kmax=maxval(k)+1
+      close(1111)
+      clfile(10:14)=adjustl(aaaa)
+      pkfile(10:14)=adjustl(aaaa)
+      lfile(10:14)=adjustl(aaaa)
+      write(103,*)clfile,' ',pkfile,' ',aaaa
+      open(101,file=clfile,form='UNFORMATTED')
+      open(102,file=pkfile,form='UNFORMATTED')
+      open(104,file=lfile,form='UNFORMATTED')
+      
+      kmax=maxval(k)+1
 !    allocate(pk(kmax),p2(n),p2k(kmax),tt(n),ttk(kmax))
-    allocate(pk(kmax),p2k(kmax),lll(kmax),ttk(kmax),lk(kmax,kmax),dkk(kmax,kmax,kmax))
-    kmax=maxval(k)
-    pk=0
-    p2=0
-    p2k=0
-    tt=0
-    ttk=0
-    dkk=0
-    
-    do i=1,n
-      pk(k(i))=pk(k(i))+1
-    end do
-    
-    do i=1,n
-      call cluster3(i)
-    end do
-    do i=1,n
+      allocate(pk(kmax),p2k(kmax),lll(kmax),ttk(kmax),lk(kmax,kmax),dkk(kmax,kmax,kmax))
+      kmax=maxval(k)
+      pk=0
+      p2=0
+      p2k=0
+      tt=0
+      ttk=0
+      dkk=0
+      
+      do i=1,n
+        pk(k(i))=pk(k(i))+1
+      end do
+      
+      do i=1,n
+        call cluster3(i)
+      end do
+      do i=1,n
 !    write(999,*)tt(i),k(i)
-      ttk(k(i))=ttk(k(i))+tt(i)
-      p2k(k(i))=p2k(k(i))+p2(i)
-    end do
+        ttk(k(i))=ttk(k(i))+tt(i)
+        p2k(k(i))=p2k(k(i))+p2(i)
+      end do
 !  do i=1,kmax
 !    if(p2k(i).gt.0)write(45,*)i,real(ttk(i))/(p2k(i)*pk(i))
 !  end do
-    allocate(clhist(kmax,2))
-    !clhist=0
-    !do i=1,n
+      allocate(clhist(kmax,2))
+      !clhist=0
+      !do i=1,n
       !clhist(k(i),1)=clhist(k(i),1)+1
       !clhist(k(i),2)=clhist(k(i),2)+cl(i)
-    !end do
-    
-    do i=1,kmax
-      write(102)i,real(pk(i))
-    end do
-    !do i=1,kmax
+      !end do
+      
+      do i=1,kmax
+        write(102)i,real(pk(i))
+      end do
+      !do i=1,kmax
       !if((clhist(i,1).ne.0).and.(clhist(i,2).ne.0))then
-        !write(101,*)i,clhist(i,2)/clhist(i,1),real(ttk(i)),real(p2k(i)),real(ttk(i))/(p2k(i)*pk(i)),real(ttk(i))/(i*(i-1)*pk(i))
+      !write(101,*)i,clhist(i,2)/clhist(i,1),real(ttk(i)),real(p2k(i)),real(ttk(i))/(p2k(i)*pk(i)),real(ttk(i))/(i*(i-1)*pk(i))
       !end if
-    !end do
-
-    lll=0
-    sk=0
-    i=1
+      !end do
+      
+      lll=0
+      sk=0
+      i=1
 !    do j=1,k(i)
 !      lll(k(i))=lll(k(i))+real(k(v(sk+j)))/k(i)
 !    end do
@@ -204,40 +216,40 @@ program evol
 !        lll(k(i))=lll(k(i))+real(k(v(sk+j)))/k(i)
 !      end do
 !    end do
-
-    
-    do i=1,kmax
-      do j=1,kmax
-        write(104)i,j,lk(j,i)
-      end do
-    end do
-    do l=1,kmax
+      
+      
       do i=1,kmax
         do j=1,kmax
-          if(dkk(j,i,l).gt.0)write(101)i,l,j,dkk(j,i,l)*.5
+          write(104)i,j,lk(j,i)
         end do
       end do
-    end do
-    
-    close(101)
-    close(102)
-    close(104)
-
-    
+      do l=1,kmax
+        do i=1,kmax
+          do j=1,kmax
+            if(dkk(j,i,l).gt.0)write(101)i,l,j,dkk(j,i,l)*.5
+          end do
+        end do
+      end do
+      
+      close(101)
+      close(102)
+      close(104)
+      
+      
 !    deallocate(pk,p2,p2k,tt,ttk,clhist)
-    deallocate(pk,p2k,ttk,clhist,lll,lk,dkk)
-
-    
-    !write(100+in,*)'##########################'
+      deallocate(pk,p2k,ttk,clhist,lll,lk,dkk)
+      
+      
+      !write(100+in,*)'##########################'
 !    write(1000+in)n,pseed,cod,ll,ktot
-    !do i=1,n
+      !do i=1,n
 !    write(1000+in)k
 !    write(1000+in)v
-    !end do
+      !end do
 !    write(1000+in)o
 !    close(1000+in)
-    
-    
+      
+      
 !    allocate(pk(n))   !makes the conectivity histogram
 !    pk=0
 !    do i=1,n
@@ -250,8 +262,8 @@ program evol
 !    deallocate(pk)
 !    close(100)
 !  end do
-
-
+      
+      
 !  kmax=maxval(k)
 !  allocate(clhist(kmax,2))
 !  clhist=0
@@ -266,7 +278,7 @@ program evol
 !    if((clhist(i,1).ne.0).and.(clhist(i,2).ne.0))write(55,*)real(i),clhist(i,2)/clhist(i,1)
 !  end do
 !  deallocate(clhist)
-
+      
 !  allocate(P(kmax,kmax))
 !  p=0
 !  do i=1,n
@@ -285,12 +297,14 @@ program evol
 !    end do
 !    write(8,*)i,soma/i
 !    !    write(*,*)'oi'
+    end do
+    
+    
+    
+    write(4,*)del
+    deallocate(v,k,cl,o,del,tt,p2)
   end do
-  
-
-  
-  write(4,*)del
-  
+    
 end program evol
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -301,11 +315,11 @@ subroutine inicia
   integer,allocatable :: m(:,:)
   integer :: i, j ,l !loop indexes
   
-  open(12,file='inicia.dat',status='old')
+  !open(12,file='inicia.dat',status='old')
   
   
   
-  read(12,*)pseed
+  !read(12,*)pseed
   !allocate(m(n,n),o(2,n))
   !read(12,*)m
   !read(12,*)o
@@ -323,7 +337,7 @@ subroutine inicia
   
   
   call setseed
-  close(12)
+  !close(12)
   
   do i=1,n
     do j=i+1,n
