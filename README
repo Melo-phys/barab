@@ -1,3 +1,5 @@
-Arquivos arq.dat e inicia.dat necessários para a execução
+Arquivos arq.dat e inicia.dat obsoletos
 
-Semente aleatória deve ser passada por linha de comando
+Numero inicial, final e semente aleatória devem ser passadas por linha de comando
+
+Condição inicial e tamanho das redes devem ser midificadas diretamente no código fonte
