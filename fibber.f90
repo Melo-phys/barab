@@ -23,7 +23,7 @@ module globals
   integer,allocatable :: v(:),k(:),o(:,:),del(:),p2(:),p2k(:),tt(:),ttk(:),pk(:)
   real*8,allocatable :: cl(:),clhist(:,:),lk(:,:),dkk(:,:,:)
   real*8 :: frac,ddd,dddd
-  real*8,parameter ::a=0, b=1, c=0
+  real*8,parameter ::a=1, b=0, c=0
   
   integer,allocatable :: kold(:),oold(:,:)
   real*8,allocatable :: clold(:)
