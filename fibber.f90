@@ -23,7 +23,7 @@ module globals
   integer,allocatable :: v(:),k(:),o(:,:),del(:),p2(:),p2k(:),tt(:),ttk(:),pk(:)
   real*8,allocatable :: cl(:),clhist(:,:),lk(:,:),dkk(:,:,:)
   real*8 :: frac,ddd,dddd
-  real*8,parameter ::a=0, b=1, c=0
+  real*8,parameter ::a=1, b=0, c=0
   
   integer,allocatable :: kold(:),oold(:,:)
   real*8,allocatable :: clold(:)
@@ -442,12 +442,12 @@ subroutine horizontal
   link=0
   j=0
   i=0
-  norm=(a*sum(k*k)+b*sum(k)+c)
+  norm=(sum(k**(0.5)))
   pl=0
   call random_number(z)
   do while(j==0)
     i=i+1
-    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
     j=1
     link(j)=i  !keeps all the nodes that links
@@ -461,7 +461,7 @@ subroutine horizontal
   call random_number(z)
   do while(j==1)
     i=i+1
-    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
     j=2
     link(j)=i  !keeps all the nodes that links
@@ -475,7 +475,7 @@ subroutine horizontal
   call random_number(z)
   do while(j==2)
     i=i+1
-    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
     j=3
     link(j)=i  !keeps all the nodes that links
@@ -489,7 +489,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==3)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=4
 !    link(j)=i  !keeps all the nodes that links
@@ -503,7 +503,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==4)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=5
 !    link(j)=i  !keeps all the nodes that links
@@ -517,7 +517,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==5)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=6
 !    link(j)=i  !keeps all the nodes that links
@@ -531,7 +531,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==6)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=7
 !    link(j)=i  !keeps all the nodes that links
@@ -545,7 +545,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==7)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=8
 !    link(j)=i  !keeps all the nodes that links
@@ -559,7 +559,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==8)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=9
 !    link(j)=i  !keeps all the nodes that links
@@ -573,7 +573,7 @@ subroutine horizontal
 !  call random_number(z)
 !  do while(j==9)
 !    i=i+1
-!    pl=pl+(a*k(i)*k(i)+b*k(i)+c)/norm
+!    pl=pl+(k(i)**(0.5))/norm
 !    write(666,*)i,k(i),z,pl,j
 !    j=10
 !    link(j)=i  !keeps all the nodes that links
